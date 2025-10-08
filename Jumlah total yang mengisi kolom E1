@@ -1,0 +1,15 @@
+import pandas as pd
+
+# Ganti dengan path file kamu jika dijalankan di lokal
+file_path = "D:\\IDP FINAL\\E1_fixx.xlsx"
+
+# Membaca file Excel
+df = pd.read_excel(file_path)
+
+# Pastikan kolom 'E1' ada
+if 'E1' in df.columns:
+    # Hitung jumlah data yang tidak kosong di kolom E1
+    jumlah_pengisi_e1 = df['E1'].notna().sum()
+    print(f"Jumlah total yang mengisi kolom E1 adalah: {jumlah_pengisi_e1}")
+else:
+    print("Kolom 'E1' tidak ditemukan dalam file.")
