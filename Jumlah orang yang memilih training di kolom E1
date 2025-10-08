@@ -1,0 +1,12 @@
+import pandas as pd
+
+# --- Ganti dengan path file Anda ---
+file_path = "D:\\IDP FINAL\\E1_fixx.xlsx"
+
+# Membaca file Excel
+df = pd.read_excel(file_path)
+
+# Menghitung jumlah orang yang memilih program dengan kata 'training' di kolom E1 (tidak case sensitive)
+training_count = df['E1'].dropna().str.contains("training", case=False).sum()
+
+print(f"Jumlah orang yang memilih training di kolom E1: {training_count}")
