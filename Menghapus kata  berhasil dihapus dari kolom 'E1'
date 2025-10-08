@@ -1,0 +1,36 @@
+import pandas as pd
+import os
+
+# ================== KONFIGURASI ==================
+file_path = "D:\\IDP FINAL\\IDP_Predicted_E1_fix.xlsx"      # ubah sesuai lokasi file kamu
+output_path = "D:\\IDP FINAL\\E1_fixx.xlsx"  # hasil setelah dibersihkan
+kolom_target = "E1"                         # nama kolom target
+teks_dihapus = "Jawab hanya nama :"         # teks yang ingin dihapus
+# =================================================
+
+# Pastikan folder output ada
+os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+# Baca file Excel
+df = pd.read_excel(file_path)
+
+# Periksa apakah kolom E1 ada
+if kolom_target in df.columns:
+    # Hapus teks target dari kolom E1
+    df[kolom_target] = (
+        df[kolom_target]
+        .astype(str)
+        .str.replace(r"\s*Jawab\s+hanya\s+nama\s*:\s*", "", regex=True, case=False)
+        .str.strip()
+    )
+
+    # Ubah "nan" atau "NaN" hasil konversi string menjadi kosong
+    df[kolom_target] = df[kolom_target].replace(["nan", "NaN"], "")
+
+    print(f"✅ Teks 'Jawab hanya nama :' berhasil dihapus dari kolom '{kolom_target}'.")
+else:
+    print(f"⚠️ Kolom '{kolom_target}' tidak ditemukan di file Excel.")
+
+# Simpan hasil ke file baru tanpa NaN
+df.to_excel(output_path, index=False, na_rep="")
+print("💾 File hasil disimpan di:", output_path)
