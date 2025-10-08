@@ -1,0 +1,44 @@
+import pandas as pd
+
+# Baca file Excel
+df = pd.read_excel("D:\\IDP FINAL\\E1_fixx.xlsx", sheet_name="Sheet1")  # Ganti nama file & sheet sesuai milikmu
+
+# Daftar semua program (gabungan leadership & technical tanpa duplikat)
+programs = [
+    'Essential Professional Program (EPP)',
+    'Supervisory Development Program (SDP)',
+    'Management Development Program (MDP)',
+    'People Manager 101',
+    'Leader as Coach',
+    'Young Professional Program',
+    'Advanced Development Program (ADP)',
+    'Project Management Excellence (PMX)',
+    'Maintenance Inspector Program',
+    'Preventive Maintenance Engineers (PME)',
+    'Cement Manufacturing Course',
+    'Analyst Excellence (AX)',
+    'Basic Maintenance',
+    'Finance for non Finance',
+    'Packer Excellence',
+    'Patroller Excellence',
+    'Kiln Operator Excellence (KOX)',
+    'Mill Operation Excellence (MOX)'
+]
+
+# Siapkan dictionary untuk menyimpan jumlah
+result = {}
+
+# Hitung jumlah orang yang memilih masing-masing program (berdasarkan isi kolom E1)
+for program in programs:
+    # Filter baris yang mengandung nama program di kolom E1
+    matches = df[df['E1'].astype(str).str.contains(program, case=False, na=False, regex=False)]
+    # Hitung jumlah orang unik (berdasarkan kolom 'Nama' jika ada)
+    if 'Nama' in df.columns:
+        count = matches['Nama'].nunique()
+    else:
+        count = len(matches)
+    result[program] = count
+
+# Tampilkan hasil
+for program, count in result.items():
+    print(f"{program}: {count} orang")
