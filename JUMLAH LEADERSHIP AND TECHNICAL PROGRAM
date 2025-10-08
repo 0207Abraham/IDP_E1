@@ -1,0 +1,48 @@
+leadership_programs = [
+    'Essential Professional Program (EPP)',
+    'Supervisory Development Program (SDP)',
+    'Management Development Program (MDP)',
+    'People Manager 101',
+    'Leader as Coach',
+    'Young Professional Program',
+    'Advanced Development Program (ADP)',
+]
+
+technical_programs = [
+    'Project Management Excellence (PMX)',
+    'Maintenance Inspector Program',
+    'Preventive Maintenance Engineers (PME)',
+    'Cement Manufacturing Course',
+    'Analyst Excellence (AX)',
+    'Basic Maintenance',
+    'Finance for non Finance',
+    'Packer Excellence',
+    'Patroller Excellence',
+    'Kiln Operator Excellence (KOX)',
+    'Mill Operation Excellence (MOX)'
+]
+
+=====================================================================================================================================================================================
+import pandas as pd
+
+# Baca file
+df = pd.read_excel("D:\\IDP FINAL\\E1_fixx.xlsx", sheet_name="Sheet1")  # ganti nama file & sheet sesuai punya kamu
+
+# Hilangkan baris kosong pada kolom E1
+df = df[df['E1'].notna()]
+
+# Buat fungsi untuk pengecekan
+def check_program(program_list, value):
+    return any(program.lower() in str(value).lower() for program in program_list)
+
+# Tambahkan kolom penanda
+df['is_leadership'] = df['E1'].apply(lambda x: check_program(leadership_programs, x))
+df['is_technical'] = df['E1'].apply(lambda x: check_program(technical_programs, x))
+
+# Hitung jumlah unik (misalnya berdasarkan 'Nama' jika ada)
+jumlah_leadership = df[df['is_leadership']]['Nama'].nunique() if 'Nama' in df.columns else df['is_leadership'].sum()
+jumlah_technical = df[df['is_technical']]['Nama'].nunique() if 'Nama' in df.columns else df['is_technical'].sum()
+
+# Tampilkan hasil
+print(f"Jumlah orang memilih program Leadership: {jumlah_leadership}")
+print(f"Jumlah orang memilih program Technical : {jumlah_technical}")
