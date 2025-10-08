@@ -1,0 +1,82 @@
+import pandas as pd
+import os
+
+# ====================== KONFIGURASI ======================
+file_path = "D:\\IDP FINAL\\E1_fixx.xlsx"        # file input
+output_path = "D:\\IDP FINAL\\E1_fixx_program.xlsx"  # file hasil
+sheet_name = "Sheet1"
+# =========================================================
+
+# Daftar program
+leadership_programs = [
+    'Essential Professional Program (EPP)',
+    'Supervisory Development Program (SDP)',
+    'Management Development Program (MDP)',
+    'People Manager 101',
+    'Leader as Coach',
+    'Young Professional Program',
+    'Advanced Development Program (ADP)',
+]
+
+technical_programs = [
+    'Project Management Excellence (PMX)',
+    'Maintenance Inspector Program',
+    'Preventive Maintenance Engineers (PME)',
+    'Cement Manufacturing Course',
+    'Analyst Excellence (AX)',
+    'Basic Maintenance',
+    'Finance for non Finance',
+    'Packer Excellence',
+    'Patroller Excellence',
+    'Kiln Operator Excellence (KOX)',
+    'Mill Operation Excellence (MOX)'
+]
+
+# ====================== PROSES ======================
+
+# Baca file Excel
+df = pd.read_excel(file_path, sheet_name=sheet_name)
+
+# Pastikan folder output ada
+os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+# Fungsi deteksi kategori program
+def detect_program(value):
+    # Jika sel kosong, return kosong juga
+    if pd.isna(value) or str(value).strip() == "":
+        return ""
+    text = str(value).lower().strip()
+    # Jika diawali dengan "training" → Others
+    if text.startswith("training"):
+        return "Others"
+    # Cek Leadership Program
+    elif any(p.lower() in text for p in leadership_programs):
+        return "Leadership Program"
+    # Cek Technical Program
+    elif any(p.lower() in text for p in technical_programs):
+        return "Technical Program"
+    # Sisanya → Others
+    else:
+        return "Others"
+
+# Tambahkan kolom kategori berdasarkan E1
+df["Kategori Program"] = df["E1"].apply(detect_program)
+
+# Hitung total per kategori (abaikan sel kosong)
+summary = df[df["Kategori Program"] != ""]["Kategori Program"].value_counts().reset_index()
+summary.columns = ["Kategori Program", "Jumlah"]
+
+# Tambahkan persentase
+total = summary["Jumlah"].sum()
+summary["Persentase (%)"] = round(summary["Jumlah"] / total * 100, 2)
+
+# ====================== SIMPAN HASIL ======================
+
+with pd.ExcelWriter(output_path, engine='openpyxl') as writer:
+    # Data lengkap
+    df.to_excel(writer, index=False, sheet_name="Data Lengkap", na_rep="")
+    # Ringkasan
+    summary.to_excel(writer, index=False, sheet_name="Ringkasan")
+
+print("✅ Proses selesai!")
+print("💾 Hasil disimpan di:", output_path)
